@@ -6,6 +6,6 @@ type Data struct {
 	gorm.Model
 	Title   string 
 	Extract string 
-	Query   string 
+	Query   string `gorm:"index"`
 }
 

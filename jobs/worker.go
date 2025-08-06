@@ -1,18 +1,20 @@
 package jobs
 
 import (
-	
 	"fmt"
-
 	"time"
 )
 
 func Worker(id int) {
 	for {
-		fmt.Println("[Start", id, "]")
+		fmt.Printf("INFO: Worker %d starting data collection\n", id)
+		start := time.Now()
+
 		Data()
-		fmt.Println("[End", id, "]")
-		time.Sleep(24 * time.Second) 
+
+		duration := time.Since(start)
+		fmt.Printf("INFO: Worker %d completed in %v\n", id, duration)
+
+		time.Sleep(24 * time.Hour) 
 	}
 }
-
