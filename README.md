@@ -256,9 +256,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **SQLite**: Lightweight database engine
 - **All Data Sources**: For providing valuable content
 
-## 📞 Support
-
-For support, email support@everything-verse.com or create an issue in the repository.
 
 ---
 
