@@ -27,7 +27,7 @@ func Collect(c *fiber.Ctx) error {
 		}()
 
 		fmt.Println("🔄 Manual data collection triggered")
-		jobs.Data()
+		jobs.Cron()
 	}()
 
 	return c.JSON(fiber.Map{

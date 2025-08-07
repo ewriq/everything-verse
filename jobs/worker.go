@@ -14,7 +14,5 @@ func Worker(id int) {
 
 		duration := time.Since(start)
 		fmt.Printf("INFO: Worker %d completed in %v\n", id, duration)
-
-		time.Sleep(24 * time.Hour) 
 	}
 }

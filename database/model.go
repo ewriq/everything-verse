@@ -4,8 +4,7 @@ import "gorm.io/gorm"
 
 type Data struct {
 	gorm.Model
-	Title   string 
-	Extract string 
-	Query   string `gorm:"index"`
+	Title   string `json:"title"`
+	Extract string `json:"extract"`
+	Query   string `json:"query" gorm:"index"`
 }
-

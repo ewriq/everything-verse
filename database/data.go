@@ -34,6 +34,20 @@ func Get(query string) ([]Data, error) {
 	return data, nil
 }
 
+func SearchFTS(keyword string) ([]Data, error) {
+	var results []Data
+
+	if keyword == "" {
+		return results, nil
+	}
+
+	likePattern := "%" + keyword + "%"
+	result := db.Where("title LIKE ? OR extract LIKE ? OR query LIKE ?",
+		likePattern, likePattern, likePattern).Find(&results)
+
+	return results, result.Error
+}
+
 func Exists(query string) bool {
 	var count int64
 	err := db.Model(&Data{}).Where("query = ?", query).Count(&count).Error
@@ -42,24 +56,4 @@ func Exists(query string) bool {
 		return false
 	}
 	return count > 0
-}
-
-func SearchFTS(keyword string) ([]Data, error) {
-    var results []Data
-
-    if keyword == "" {
-        return results, nil
-    }
-
-    likePattern := "%" + keyword + "%"
-
-    query := `
-        SELECT rowid, title, extract, query
-        FROM data
-        WHERE title LIKE ? OR extract LIKE ? OR query LIKE ?
-        LIMIT 50;
-    `
-
-    err := db.Raw(query, likePattern, likePattern, likePattern).Scan(&results).Error
-    return results, err
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func Status(c *fiber.Ctx) error {
-	// Get all data to check database status
+	
 	data, err := database.GetAll()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
