@@ -57,3 +57,11 @@ func Exists(query string) bool {
 	}
 	return count > 0
 }
+
+func GetTitles() ([]string, error) {
+	var titles []string
+	if err := db.Model(&Data{}).Pluck("Title", &titles).Error; err != nil {
+		return nil, err
+	}
+	return titles, nil
+}

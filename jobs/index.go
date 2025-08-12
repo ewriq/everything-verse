@@ -21,6 +21,7 @@ func Cron() {
 		}(i)
 	}
 
+	
 	wg.Wait()
 	fmt.Println("INFO: All workers completed")
 }

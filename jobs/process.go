@@ -131,15 +131,18 @@ func processMastodon(body []byte) ([]Item, error) {
 	return items, nil
 }
 
+
+var offset int = 0
+
 func dataFromWikipedia() (bool, error) {
 	var insertedAny atomic.Bool
 	var wg sync.WaitGroup
-	today := time.Now()
+	today := time.Now().AddDate(0, 0, -offset)
 	limiter := make(chan struct{}, wikipediaConcurrency)
 
 	for i := 1; i <= maxLookbackDays; i++ {
 		date := today.AddDate(0, 0, -i)
-		url := "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/tr.wikipedia/all-access/" + date.Format("2006/01/02")
+		urlStr := "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/tr.wikipedia/all-access/" + date.Format("2006/01/02")
 
 		wg.Add(1)
 		go func(url string) {
@@ -158,8 +161,7 @@ func dataFromWikipedia() (bool, error) {
 			if err := json.Unmarshal(body, &resp); err != nil || len(resp.Items) == 0 {
 				return
 			}
-			var articles = resp.Items[0].Articles
-
+			articles := resp.Items[0].Articles
 			var articleWG sync.WaitGroup
 			for _, a := range articles {
 				article := a
@@ -179,9 +181,10 @@ func dataFromWikipedia() (bool, error) {
 				}()
 			}
 			articleWG.Wait()
-		}(url)
+		}(urlStr)
 	}
 	wg.Wait()
+	offset++
 	return insertedAny.Load(), nil
 }
 
@@ -355,46 +358,15 @@ func processGitHubTrending(body []byte) ([]Item, error) {
 }
 
 func processRSSFeed(body []byte) ([]Item, error) {
-	doc, err := html.Parse(bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-	var items []Item
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "item" {
-			var title, desc, guid string
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				if c.Type == html.ElementNode {
-					switch c.Data {
-					case "title":
-						title = getTextContent(c)
-					case "description":
-						desc = getTextContent(c)
-					case "guid":
-						guid = getTextContent(c)
-					case "link":
-						if guid == "" {
-							guid = getTextContent(c)
-						}
-					}
-				}
-			}
-			if guid != "" && title != "" {
-				items = append(items, Item{
-					Key:     "rss_" + guid,
-					Title:   title,
-					Content: desc,
-				})
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
-	return items, nil
+	return []Item{
+		{
+			Key:     "rss_raw",
+			Title:   "Raw RSS Feed",
+			Content: string(body),
+		},
+	}, nil
 }
+
 
 func processSource(s Source) (bool, error) {
 	body, err := fetch(s.URL)

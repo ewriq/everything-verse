@@ -30,7 +30,7 @@ const (
 	maxItemsToFetch      = 100
 	maxConcurrentDB      = 10
 	maxConcurrentFetch   = 20
-	userAgent            = "everything-verse-bot/1.0 (https://github.com/your-repo)"
+	userAgent            = "everything-verse-bot/1.0 (https://github.com/ewriq/everything-verse)"
 	wikipediaConcurrency = 10
 	httpTimeout          = 30 * time.Second
 	dbTimeout            = 5 * time.Second
@@ -58,4 +58,9 @@ type Source struct {
 	Name      string
 	URL       string
 	Processor func(body []byte) ([]Item, error)
+}
+
+
+type SearchSource struct {
+	Title string
 }
