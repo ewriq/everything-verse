@@ -1,6 +1,7 @@
 package main
 
 import (
+
 	"everything-verse/internal/middleware"
 	"everything-verse/internal/routes"
 	"everything-verse/jobs"
@@ -26,6 +27,7 @@ func main() {
 
 	routes.Api(service)
 	go jobs.Cron()
+
 	app.Use(middleware.NotFound)
 	err := app.Listen(":3000")
 	if err != nil {

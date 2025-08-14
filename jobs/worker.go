@@ -1,6 +1,8 @@
 package jobs
 
 import (
+	
+	//"context"
 	"fmt"
 	"sync"
 	"time"
@@ -21,12 +23,13 @@ func Worker(id int) {
 
 		go func() {
 			defer wg.Done()
+			
 			DeepSearch()
 		}()
 
 		go func() {
 			defer wg.Done()
-			Crawling()
+			CrawlWeb()
 		}()
 
 

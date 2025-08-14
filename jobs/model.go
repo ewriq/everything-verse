@@ -29,7 +29,7 @@ const (
 	maxLookbackDays      = 7
 	maxItemsToFetch      = 100
 	maxConcurrentDB      = 10
-	maxConcurrentFetch   = 20
+	maxConcurrentFetch   = 2
 	userAgent            = "everything-verse-bot/1.0 (https://github.com/ewriq/everything-verse)"
 	wikipediaConcurrency = 10
 	httpTimeout          = 30 * time.Second
