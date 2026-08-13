@@ -1,37 +1,52 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
 
-func Insert(query, extract, title string) error {
-	data := Data{
-		Query:   query,
-		Extract: extract,
-		Title:   title,
-	}
+	"gorm.io/gorm"
+)
 
-	result := db.Create(&data)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+func Insert(source, extract, title, url string) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+
+		insertExtract := Extract{
+			Extract: extract,
+		}
+
+		if err := tx.Create(&insertExtract).Error; err != nil {
+			return err
+		}
+
+		data := Data{
+			Extract: fmt.Sprintf("%d", insertExtract.ID),
+			Title:   title,
+			Source:  source,
+			Url:     url,
+		}
+
+		if err := tx.Create(&data).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Exec(`
+            INSERT INTO data_fts(rowid, title, extract)
+            VALUES (?, ?, ?)
+        `, data.ID, data.Title, extract).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
-func GetAll() ([]Data, error) {
-	var data []Data
-	result := db.Find(&data)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return data, nil
-}
+func GetAll() (int64, error) {
+	var count int64
 
-func Get(query string) ([]Data, error) {
-	var data []Data
-	result := db.Where("query = ?", query).Find(&data)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := db.Model(&Data{}).Count(&count).Error; err != nil {
+		return  0, err
 	}
-	return data, nil
+
+	return  count, nil
 }
 
 func SearchFTS(keyword string) ([]Data, error) {
@@ -41,16 +56,28 @@ func SearchFTS(keyword string) ([]Data, error) {
 		return results, nil
 	}
 
-	likePattern := "%" + keyword + "%"
-	result := db.Where("title LIKE ? OR extract LIKE ? OR query LIKE ?",
-		likePattern, likePattern, likePattern).Find(&results)
+	err := db.Raw(`
+		SELECT
+			data.id,
+			data.title,
+			extracts.extract AS extract,
+			data.source,
+			data.url
+		FROM data
+		JOIN data_fts
+			ON data.id = data_fts.rowid
+		JOIN extracts
+			ON extracts.id = CAST(data.extract AS INTEGER)
+		WHERE data_fts MATCH ?
+		ORDER BY bm25(data_fts)
+	`, keyword).Scan(&results).Error
 
-	return results, result.Error
+	return results, err
 }
 
-func Exists(query string) bool {
+func Exists(source string) bool {
 	var count int64
-	err := db.Model(&Data{}).Where("query = ?", query).Count(&count).Error
+	err := db.Model(&Data{}).Where("source = ?", source).Count(&count).Error
 	if err != nil {
 		fmt.Println("DB error:", err)
 		return false
@@ -58,10 +85,3 @@ func Exists(query string) bool {
 	return count > 0
 }
 
-func GetTitles() ([]string, error) {
-	var titles []string
-	if err := db.Model(&Data{}).Pluck("Title", &titles).Error; err != nil {
-		return nil, err
-	}
-	return titles, nil
-}

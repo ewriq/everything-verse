@@ -6,37 +6,11 @@ import (
 	"time"
 )
 
-type topPagesResponse struct {
-	Items []struct {
-		Articles []struct {
-			Article string `json:"article"`
-			Views   int    `json:"views"`
-			Rank    int    `json:"rank"`
-		} `json:"articles"`
-	} `json:"items"`
-}
-
-type wikiResponse struct {
-	Query struct {
-		Pages map[string]struct {
-			Title   string `json:"title"`
-			Extract string `json:"extract"`
-		} `json:"pages"`
-	} `json:"query"`
-}
-
-const (
-	maxLookbackDays      = 7
-	maxItemsToFetch      = 100
-	maxConcurrentDB      = 10
-	maxConcurrentFetch   = 2
-	userAgent            = "everything-verse-bot/1.0 (https://github.com/ewriq/everything-verse)"
-	wikipediaConcurrency = 10
-	httpTimeout          = 30 * time.Second
-	dbTimeout            = 5 * time.Second
-)
-
 var (
+	maxWorker = 5
+	maxRSSItemsPerFeed = 30
+	httpTimeout        = 30 * time.Second
+	SourcesPath = "sources.opml"
 	httpClient = &http.Client{
 		Timeout: httpTimeout,
 		Transport: &http.Transport{
@@ -45,7 +19,10 @@ var (
 			IdleConnTimeout:     90 * time.Second,
 		},
 	}
-	dbMutex sync.RWMutex
+	dbMutex sync.Mutex
+	DataCollectionMu   sync.Mutex
+	DataCollectionBusy bool
+	InsertedCount int32
 )
 
 type Item struct {
@@ -60,7 +37,47 @@ type Source struct {
 	Processor func(body []byte) ([]Item, error)
 }
 
+type OpmlDocument struct {
+	Body OpmlBody `xml:"body"`
+}
 
-type SearchSource struct {
-	Title string
+type OpmlBody struct {
+	Outlines []OpmlOutline `xml:"outline"`
+}
+
+type OpmlOutline struct {
+	Title    string        `xml:"title,attr"`
+	Text     string        `xml:"text,attr"`
+	Type     string        `xml:"type,attr"`
+	XMLURL   string        `xml:"xmlUrl,attr"`
+	Outlines []OpmlOutline `xml:"outline"`
+}
+type RssEnvelope struct {
+	Channel struct {
+		Items []RssItem `xml:"item"`
+	} `xml:"channel"`
+}
+
+type RssItem struct {
+	Title       string `xml:"title"`
+	Description string `xml:"description"`
+	Link        string `xml:"link"`
+	GUID        string `xml:"guid"`
+}
+
+type AtomEnvelope struct {
+	Entries []AtomEntry `xml:"entry"`
+}
+
+type AtomEntry struct {
+	ID      string     `xml:"id"`
+	Title   string     `xml:"title"`
+	Summary string     `xml:"summary"`
+	Content string     `xml:"content"`
+	Links   []AtomLink `xml:"link"`
+}
+
+type AtomLink struct {
+	Href string `xml:"href,attr"`
+	Rel  string `xml:"rel,attr"`
 }

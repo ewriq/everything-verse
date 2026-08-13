@@ -1,34 +1,31 @@
 package main
 
 import (
-
-	"everything-verse/internal/middleware"
 	"everything-verse/internal/routes"
 	"everything-verse/jobs"
+	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v3"
 
 	_ "everything-verse/database"
-	_ "everything-verse/jobs"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Use(middleware.Cors)
-	app.Use(middleware.Logger)
-	app.Use(middleware.Compress)
-	app.Use(middleware.Security)
-	app.Use(middleware.RateLimit)
-	app.Use(recover.New())
+	routes.Api(app)
 
-	service := app.Group("/")
+	go func() {
+		counter := time.NewTicker(5 * time.Minute)
+		defer counter.Stop()
 
-	routes.Api(service)
-	go jobs.Cron()
+		jobs.Data() 
 
-	app.Use(middleware.NotFound)
+		for range counter.C {
+			jobs.Data()
+		}
+	}()
+
 	err := app.Listen(":3000")
 	if err != nil {
 		panic(err)

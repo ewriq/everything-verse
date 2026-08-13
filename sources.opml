@@ -1,0 +1,577 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Technology RSS Sources</title>
+  </head>
+
+  <body>
+      <outline
+        type="rss"
+        text="TechCrunch"
+        title="TechCrunch"
+        xmlUrl="https://techcrunch.com/feed/"
+        htmlUrl="https://techcrunch.com/" />
+
+      <outline
+        type="rss"
+        text="Ars Technica"
+        title="Ars Technica"
+        xmlUrl="https://feeds.arstechnica.com/arstechnica/index"
+        htmlUrl="https://arstechnica.com/" />
+
+      <outline
+        type="rss"
+        text="The Verge"
+        title="The Verge"
+        xmlUrl="https://www.theverge.com/rss/index.xml"
+        htmlUrl="https://www.theverge.com/" />
+
+      <outline
+        type="rss"
+        text="Engadget"
+        title="Engadget"
+        xmlUrl="https://www.engadget.com/rss.xml"
+        htmlUrl="https://www.engadget.com/" />
+
+      <outline
+        type="rss"
+        text="VentureBeat"
+        title="VentureBeat"
+        xmlUrl="https://venturebeat.com/feed/"
+        htmlUrl="https://venturebeat.com/" />
+
+      <outline
+        type="rss"
+        text="9to5Mac"
+        title="9to5Mac"
+        xmlUrl="https://9to5mac.com/feed/"
+        htmlUrl="https://9to5mac.com/" />
+
+      <outline
+        type="rss"
+        text="9to5Google"
+        title="9to5Google"
+        xmlUrl="https://9to5google.com/feed/"
+        htmlUrl="https://9to5google.com/" />
+
+      <outline
+        type="rss"
+        text="Android Authority"
+        title="Android Authority"
+        xmlUrl="https://www.androidauthority.com/feed/"
+        htmlUrl="https://www.androidauthority.com/" />
+
+      <outline
+        type="rss"
+        text="Android Police"
+        title="Android Police"
+        xmlUrl="https://www.androidpolice.com/feed/"
+        htmlUrl="https://www.androidpolice.com/" />
+
+      <outline
+        type="rss"
+        text="MIT Technology Review"
+        title="MIT Technology Review"
+        xmlUrl="https://www.technologyreview.com/feed/"
+        htmlUrl="https://www.technologyreview.com/" />
+
+      <outline
+        type="rss"
+        text="Hacker News"
+        title="Hacker News"
+        xmlUrl="https://news.ycombinator.com/rss"
+        htmlUrl="https://news.ycombinator.com/" />
+
+      <outline
+        type="rss"
+        text="Lobsters"
+        title="Lobsters"
+        xmlUrl="https://lobste.rs/rss"
+        htmlUrl="https://lobste.rs/" />
+
+      <outline
+        type="rss"
+        text="Stack Overflow Blog"
+        title="Stack Overflow Blog"
+        xmlUrl="https://stackoverflow.blog/feed/"
+        htmlUrl="https://stackoverflow.blog/" />
+
+      <outline
+        type="rss"
+        text="GitHub Blog"
+        title="GitHub Blog"
+        xmlUrl="https://github.blog/feed/"
+        htmlUrl="https://github.blog/" />
+
+      <outline
+        type="rss"
+        text="GitHub Engineering"
+        title="GitHub Engineering"
+        xmlUrl="https://github.blog/engineering/feed/"
+        htmlUrl="https://github.blog/engineering/" />
+
+      <outline
+        type="rss"
+        text="DEV Community"
+        title="DEV Community"
+        xmlUrl="https://dev.to/feed"
+        htmlUrl="https://dev.to/" />
+
+      <outline
+        type="rss"
+        text="CSS-Tricks"
+        title="CSS-Tricks"
+        xmlUrl="https://css-tricks.com/feed/"
+        htmlUrl="https://css-tricks.com/" />
+
+      <outline
+        type="rss"
+        text="Smashing Magazine"
+        title="Smashing Magazine"
+        xmlUrl="https://www.smashingmagazine.com/feed/"
+        htmlUrl="https://www.smashingmagazine.com/" />
+
+      <outline
+        type="rss"
+        text="A List Apart"
+        title="A List Apart"
+        xmlUrl="https://alistapart.com/main/feed/"
+        htmlUrl="https://alistapart.com/" />
+
+      <outline
+        type="rss"
+        text="Martin Fowler"
+        title="Martin Fowler"
+        xmlUrl="https://martinfowler.com/feed.atom"
+        htmlUrl="https://martinfowler.com/" />
+
+      <outline
+        type="rss"
+        text="Go Blog"
+        title="Go Blog"
+        xmlUrl="https://go.dev/blog/feed.atom"
+        htmlUrl="https://go.dev/blog/" />
+
+      <outline
+        type="rss"
+        text="Rust Blog"
+        title="Rust Blog"
+        xmlUrl="https://blog.rust-lang.org/feed.xml"
+        htmlUrl="https://blog.rust-lang.org/" />
+
+      <outline
+        type="rss"
+        text="Node.js Blog"
+        title="Node.js Blog"
+        xmlUrl="https://nodejs.org/en/feed/blog.xml"
+        htmlUrl="https://nodejs.org/en/blog/" />
+
+      <outline
+        type="rss"
+        text="Deno Blog"
+        title="Deno Blog"
+        htmlUrl="https://deno.com/blog" />
+
+      <outline
+        type="rss"
+        text="Python Insider"
+        title="Python Insider"
+        htmlUrl="https://blog.python.org/" />
+
+      <outline
+        type="rss"
+        text="PostgreSQL News"
+        title="PostgreSQL News"
+        htmlUrl="https://www.postgresql.org/" />
+
+      <outline
+        type="rss"
+        text="Redis Blog"
+        title="Redis Blog"
+        htmlUrl="https://redis.io/blog/" />
+
+      <outline
+        type="rss"
+        text="MongoDB Blog"
+        title="MongoDB Blog"
+        xmlUrl="https://www.mongodb.com/blog/rss"
+        htmlUrl="https://www.mongodb.com/blog" />
+
+      <outline
+        type="rss"
+        text="Planet PostgreSQL"
+        title="Planet PostgreSQL"
+        xmlUrl="https://planet.postgresql.org/rss20.xml"
+        htmlUrl="https://planet.postgresql.org/" />
+
+      <outline
+        type="rss"
+        text="Laravel News"
+        title="Laravel News"
+        xmlUrl="https://laravel-news.com/feed"
+        htmlUrl="https://laravel-news.com/" />
+
+      <outline
+        type="rss"
+        text="AWS News Blog"
+        title="AWS News Blog"
+        xmlUrl="https://aws.amazon.com/blogs/aws/feed/"
+        htmlUrl="https://aws.amazon.com/blogs/aws/" />
+
+      <outline
+        type="rss"
+        text="AWS Architecture Blog"
+        title="AWS Architecture Blog"
+        xmlUrl="https://aws.amazon.com/blogs/architecture/feed/"
+        htmlUrl="https://aws.amazon.com/blogs/architecture/" />
+
+      <outline
+        type="rss"
+        text="AWS Compute Blog"
+        title="AWS Compute Blog"
+        xmlUrl="https://aws.amazon.com/blogs/compute/feed/"
+        htmlUrl="https://aws.amazon.com/blogs/compute/" />
+
+      <outline
+        type="rss"
+        text="AWS Database Blog"
+        title="AWS Database Blog"
+        xmlUrl="https://aws.amazon.com/blogs/database/feed/"
+        htmlUrl="https://aws.amazon.com/blogs/database/" />
+
+      <outline
+        type="rss"
+        text="Google Cloud Blog"
+        title="Google Cloud Blog"
+        htmlUrl="https://cloud.google.com/blog/" />
+
+      <outline
+        type="rss"
+        text="Google Cloud Architecture"
+        title="Google Cloud Architecture"
+        htmlUrl="https://cloud.google.com/blog/products/infrastructure-modernization" />
+
+      <outline
+        type="rss"
+        text="Azure Blog"
+        title="Azure Blog"
+        xmlUrl="https://azure.microsoft.com/en-us/blog/feed/"
+        htmlUrl="https://azure.microsoft.com/en-us/blog/" />
+
+      <outline
+        type="rss"
+        text="Kubernetes Blog"
+        title="Kubernetes Blog"
+        xmlUrl="https://kubernetes.io/feed.xml"
+        htmlUrl="https://kubernetes.io/blog/" />
+
+      <outline
+        type="rss"
+        text="Docker Blog"
+        title="Docker Blog"
+        xmlUrl="https://www.docker.com/feed/"
+        htmlUrl="https://www.docker.com/blog/" />
+
+      <outline
+        type="rss"
+        text="CNCF Blog"
+        title="CNCF Blog"
+        xmlUrl="https://www.cncf.io/feed/"
+        htmlUrl="https://www.cncf.io/blog/" />
+
+      <outline
+        type="rss"
+        text="HashiCorp Blog"
+        title="HashiCorp Blog"
+        xmlUrl="https://www.hashicorp.com/blog/feed.xml"
+        htmlUrl="https://www.hashicorp.com/blog" />
+
+      <outline
+        type="rss"
+        text="Cloudflare Blog"
+        title="Cloudflare Blog"
+        xmlUrl="https://blog.cloudflare.com/rss/"
+        htmlUrl="https://blog.cloudflare.com/" />
+
+      <outline
+        type="rss"
+        text="Krebs on Security"
+        title="Krebs on Security"
+        xmlUrl="https://krebsonsecurity.com/feed/"
+        htmlUrl="https://krebsonsecurity.com/" />
+
+      <outline
+        type="rss"
+        text="Google Security Blog"
+        title="Google Security Blog"
+        xmlUrl="https://security.googleblog.com/feeds/posts/default"
+        htmlUrl="https://security.googleblog.com/" />
+
+      <outline
+        type="rss"
+        text="Microsoft Security Blog"
+        title="Microsoft Security Blog"
+        xmlUrl="https://www.microsoft.com/en-us/security/blog/feed/"
+        htmlUrl="https://www.microsoft.com/en-us/security/blog/" />
+
+      <outline
+        type="rss"
+        text="Cloudflare Security"
+        title="Cloudflare Security"
+        xmlUrl="https://blog.cloudflare.com/tag/security/rss/"
+        htmlUrl="https://blog.cloudflare.com/tag/security/" />
+
+      <outline
+        type="rss"
+        text="SANS Internet Storm Center"
+        title="SANS Internet Storm Center"
+        xmlUrl="https://isc.sans.edu/rssfeed_full.xml"
+        htmlUrl="https://isc.sans.edu/" />
+
+      <outline
+        type="rss"
+        text="Schneier on Security"
+        title="Schneier on Security"
+        xmlUrl="https://www.schneier.com/feed/"
+        htmlUrl="https://www.schneier.com/" />
+
+      <outline
+        type="rss"
+        text="The Hacker News"
+        title="The Hacker News"
+        xmlUrl="https://feeds.feedburner.com/TheHackersNews"
+        htmlUrl="https://thehackernews.com/" />
+
+      <outline
+        type="rss"
+        text="BleepingComputer"
+        title="BleepingComputer"
+        xmlUrl="https://www.bleepingcomputer.com/feed/"
+        htmlUrl="https://www.bleepingcomputer.com/" />
+
+      <outline
+        type="rss"
+        text="OpenAI News"
+        title="OpenAI News"
+        xmlUrl="https://openai.com/news/rss.xml"
+        htmlUrl="https://openai.com/news/" />
+
+      <outline
+        type="rss"
+        text="Google AI Blog"
+        title="Google AI Blog"
+        xmlUrl="https://blog.google/technology/ai/rss/"
+        htmlUrl="https://blog.google/technology/ai/" />
+
+      <outline
+        type="rss"
+        text="Google DeepMind"
+        title="Google DeepMind"
+        xmlUrl="https://deepmind.google/blog/rss.xml"
+        htmlUrl="https://deepmind.google/discover/blog/" />
+
+      <outline
+        type="rss"
+        text="Hugging Face Blog"
+        title="Hugging Face Blog"
+        xmlUrl="https://huggingface.co/blog/feed.xml"
+        htmlUrl="https://huggingface.co/blog" />
+
+      <outline
+        type="rss"
+        text="NVIDIA Developer Blog"
+        title="NVIDIA Developer Blog"
+        xmlUrl="https://developer.nvidia.com/blog/feed/"
+        htmlUrl="https://developer.nvidia.com/blog/" />
+
+      <outline
+        type="rss"
+        text="NVIDIA Blog"
+        title="NVIDIA Blog"
+        xmlUrl="https://blogs.nvidia.com/feed/"
+        htmlUrl="https://blogs.nvidia.com/" />
+
+      <outline
+        type="rss"
+        text="Meta AI"
+        title="Meta AI"
+        htmlUrl="https://ai.meta.com/blog/" />
+
+      <outline
+        type="rss"
+        text="Anthropic News"
+        title="Anthropic News"
+        htmlUrl="https://www.anthropic.com/news" />
+
+      <outline
+        type="rss"
+        text="Machine Learning Mastery"
+        title="Machine Learning Mastery"
+        xmlUrl="https://machinelearningmastery.com/feed/"
+        htmlUrl="https://machinelearningmastery.com/" />
+
+      <outline
+        type="rss"
+        text="BAIR Blog"
+        title="BAIR Blog"
+        xmlUrl="https://bair.berkeley.edu/blog/feed.xml"
+        htmlUrl="https://bair.berkeley.edu/blog/" />
+
+      <outline
+        type="rss"
+        text="Linux Kernel"
+        title="Linux Kernel"
+        xmlUrl="https://www.kernel.org/feeds/kdist.xml"
+        htmlUrl="https://www.kernel.org/" />
+
+      <outline
+        type="rss"
+        text="Linux Foundation"
+        title="Linux Foundation"
+        xmlUrl="https://www.linuxfoundation.org/blog/rss.xml"
+        htmlUrl="https://www.linuxfoundation.org/blog/" />
+
+      <outline
+        type="rss"
+        text="Mozilla Hacks"
+        title="Mozilla Hacks"
+        xmlUrl="https://hacks.mozilla.org/feed/"
+        htmlUrl="https://hacks.mozilla.org/" />
+
+      <outline
+        type="rss"
+        text="Apache Software Foundation"
+        title="Apache Software Foundation"
+        xmlUrl="https://news.apache.org/feed/"
+        htmlUrl="https://news.apache.org/" />
+
+      <outline
+        type="rss"
+        text="FreeBSD News"
+        title="FreeBSD News"
+        htmlUrl="https://www.freebsd.org/news/" />
+
+      <outline
+        type="rss"
+        text="GNOME"
+        title="GNOME"
+        htmlUrl="https://blogs.gnome.org/" />
+
+      <outline
+        type="rss"
+        text="KDE"
+        title="KDE"
+        htmlUrl="https://kde.org/announcements/" />
+
+      <outline
+        type="rss"
+        text="Chrome Developers"
+        title="Chrome Developers"
+        xmlUrl="https://developer.chrome.com/static/blog/feed.xml"
+        htmlUrl="https://developer.chrome.com/blog/" />
+
+      <outline
+        type="rss"
+        text="WebKit Blog"
+        title="WebKit Blog"
+        xmlUrl="https://webkit.org/feed/"
+        htmlUrl="https://webkit.org/blog/" />
+
+      <outline
+        type="rss"
+        text="Mozilla Hacks"
+        title="Mozilla Hacks"
+        xmlUrl="https://hacks.mozilla.org/feed/"
+        htmlUrl="https://hacks.mozilla.org/" />
+
+      <outline
+        type="rss"
+        text="web.dev"
+        title="web.dev"
+        xmlUrl="https://web.dev/feed.xml"
+        htmlUrl="https://web.dev/" />
+
+      <outline
+        type="rss"
+        text="CSS Weekly"
+        title="CSS Weekly"
+        xmlUrl="https://css-weekly.com/feed/"
+        htmlUrl="https://css-weekly.com/" />
+
+      <outline
+        type="rss"
+        text="JavaScript Weekly"
+        title="JavaScript Weekly"
+        htmlUrl="https://javascriptweekly.com/" />
+
+      <outline
+        type="rss"
+        text="AnandTech"
+        title="AnandTech"
+        htmlUrl="https://www.anandtech.com/" />
+
+      <outline
+        type="rss"
+        text="Tom's Hardware"
+        title="Tom's Hardware"
+        xmlUrl="https://www.tomshardware.com/feeds/all"
+        htmlUrl="https://www.tomshardware.com/" />
+
+      <outline
+        type="rss"
+        text="Phoronix"
+        title="Phoronix"
+        xmlUrl="https://www.phoronix.com/rss.php"
+        htmlUrl="https://www.phoronix.com/" />
+
+      <outline
+        type="rss"
+        text="ServeTheHome"
+        title="ServeTheHome"
+        xmlUrl="https://www.servethehome.com/feed/"
+        htmlUrl="https://www.servethehome.com/" />
+
+      <outline
+        type="rss"
+        text="Liliputing"
+        title="Liliputing"
+        xmlUrl="https://liliputing.com/feed/"
+        htmlUrl="https://liliputing.com/" />
+
+      <outline
+        type="rss"
+        text="Meta Engineering"
+        title="Meta Engineering"
+        xmlUrl="https://engineering.fb.com/feed/"
+        htmlUrl="https://engineering.fb.com/" />
+
+      <outline
+        type="rss"
+        text="Netflix TechBlog"
+        title="Netflix TechBlog"
+        xmlUrl="https://netflixtechblog.com/feed"
+        htmlUrl="https://netflixtechblog.com/" />
+
+      <outline
+        type="rss"
+        text="Uber Engineering"
+        title="Uber Engineering"
+        htmlUrl="https://www.uber.com/blog/engineering/" />
+
+      <outline
+        type="rss"
+        text="Dropbox Tech Blog"
+        title="Dropbox Tech Blog"
+        xmlUrl="https://dropbox.tech/feed"
+        htmlUrl="https://dropbox.tech/" />
+
+      <outline
+        type="rss"
+        text="Spotify Engineering"
+        title="Spotify Engineering"
+        xmlUrl="https://engineering.atspotify.com/feed/"
+        htmlUrl="https://engineering.atspotify.com/" />
+
+
+  </body>
+</opml>

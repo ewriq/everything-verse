@@ -1,10 +1,14 @@
 package database
 
-import "gorm.io/gorm"
-
 type Data struct {
-	gorm.Model
-	Title   string `json:"title"`
-	Extract string `json:"extract"`
-	Query   string `json:"query" gorm:"index"`
+	ID      uint   `gorm:"not null;primaryKey" json:"id"`
+	Title   string `gorm:"not null" json:"title"`
+	Extract string `gorm:"not null" json:"extract"`
+	Source  string `gorm:"not null;uniqueIndex" json:"source"`
+	Url     string `gorm:"not null" json:"url"`
+}
+
+type Extract struct {
+	ID      uint   `gorm:"not null;primaryKey"`
+	Extract string `gorm:"not null" json:"data"`
 }

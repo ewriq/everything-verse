@@ -6,7 +6,7 @@ A comprehensive content aggregation system that collects and processes data from
 
 ### 📊 **Massive Data Collection**
 - **200+ Sources**: Tech news, developer blogs, AI/ML, security, cloud platforms, and more
-- **Real-time Processing**: Concurrent data fetching and processing
+- **Real-time Processing**: Concurrent data Fetching and processing
 - **Smart Deduplication**: Prevents duplicate content storage
 - **Multi-format Support**: RSS feeds, JSON APIs, and custom processors
 
@@ -78,9 +78,9 @@ PORT=3000
 DB_PATH=./database/data.db
 
 # Concurrency Settings
-MAX_CONCURRENT_FETCH=20
+MAX_CONCURRENT_Fetch=20
 MAX_CONCURRENT_DB=10
-MAX_ITEMS_TO_FETCH=100
+MAX_ITEMS_TO_Fetch=100
 ```
 
 ### Constants (in `jobs/model.go`)
@@ -138,7 +138,8 @@ everything-verse/
 ├── main.go                 # Application entry point
 ├── go.mod                  # Go module dependencies
 ├── jobs/                   # Data collection jobs
-│   ├── data.go            # Source definitions (200+ sources)
+│   ├── data.go            # API source definitions + job orchestration
+│   ├── rss_sources.opml   # RSS/Atom source list (OPML)
 │   ├── process.go         # Data processors
 │   ├── model.go           # Data models and constants
 │   ├── utils.go           # Utility functions
@@ -211,13 +212,13 @@ INFO: Successfully added data from 45 sources
 ## 🔧 Development
 
 ### Adding New Sources
-1. Add source to `jobs/data.go`
+1. Add API/json source to `jobs/data.go` or RSS/Atom source to `jobs/rss_sources.opml`
 2. Implement processor in `jobs/process.go` (if needed)
 3. Test with `go run main.go`
 
 ### Example Source Addition
-```go
-{"New Source", "https://api.example.com/feed", processRSSFeed},
+```xml
+<outline text="New Source" title="New Source" type="rss" xmlUrl="https://api.example.com/feed" />
 ```
 
 ### Running Tests

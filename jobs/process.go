@@ -1,411 +1,158 @@
 package jobs
 
 import (
-	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
-
-	urls "net/url"
+	"sort"
 	"strings"
-	"sync"
-	"sync/atomic"
-	"time"
-
-	"golang.org/x/net/html"
 )
 
-func processReddit(body []byte) ([]Item, error) {
-	var resp struct {
-		Data struct {
-			Children []struct {
-				Data struct {
-					Title    string `json:"title"`
-					SelfText string `json:"selftext"`
-					ID       string `json:"id"`
-				} `json:"data"`
-			} `json:"children"`
-		} `json:"data"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, c := range resp.Data.Children {
-		items = append(items, Item{
-			Key:     "reddit_" + c.Data.ID,
-			Title:   c.Data.Title,
-			Content: c.Data.SelfText,
-		})
-	}
-	return items, nil
-}
-
-func processHackerNews(body []byte) ([]Item, error) {
-	var ids []int
-	if err := json.Unmarshal(body, &ids); err != nil {
-		return nil, err
-	}
-	if len(ids) > maxItemsToFetch {
-		ids = ids[:maxItemsToFetch]
+func ProcessFeed(body []byte) ([]Item, error) {
+	items, err := ParseItems(body)
+	if err == nil && len(items) > 0 {
+		return items, nil
 	}
 
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	var items []Item
+	items, atomErr := ParseAtomItems(body)
 
-	for _, id := range ids {
-		wg.Add(1)
-		go func(id int) {
-			defer wg.Done()
-			url := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json", id)
-			body, err := fetch(url)
-			if err != nil {
-				return
-			}
-			var data struct {
-				Title string `json:"title"`
-				Text  string `json:"text"`
-				ID    int    `json:"id"`
-			}
-			if err := json.Unmarshal(body, &data); err != nil {
-				return
-			}
-			mu.Lock()
-			items = append(items, Item{
-				Key:     fmt.Sprintf("hn_%d", data.ID),
-				Title:   data.Title,
-				Content: data.Text,
-			})
-			mu.Unlock()
-		}(id)
+	if atomErr == nil && len(items) > 0 {
+		return items, nil
 	}
-	wg.Wait()
-	return items, nil
-}
-
-func processStackExchange(body []byte) ([]Item, error) {
-	var resp struct {
-		Items []struct {
-			Title      string `json:"title"`
-			Body       string `json:"body_markdown"`
-			QuestionID int    `json:"question_id"`
-		} `json:"items"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, q := range resp.Items {
-		items = append(items, Item{
-			Key:     fmt.Sprintf("se_%d", q.QuestionID),
-			Title:   q.Title,
-			Content: q.Body,
-		})
-	}
-	return items, nil
-}
-
-func processMastodon(body []byte) ([]Item, error) {
-	var toots []struct {
-		Content string `json:"content"`
-		ID      string `json:"id"`
-		Account struct {
-			Username string `json:"username"`
-		} `json:"account"`
-	}
-	if err := json.Unmarshal(body, &toots); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, toot := range toots {
-		content := stripHTML(toot.Content)
-		if content != "" {
-			items = append(items, Item{
-				Key:     "mastodon_" + toot.ID,
-				Title:   "Mastodon post by @" + toot.Account.Username,
-				Content: content,
-			})
-		}
-	}
-	return items, nil
-}
-
-
-var offset int = 0
-
-func dataFromWikipedia() (bool, error) {
-	var insertedAny atomic.Bool
-	var wg sync.WaitGroup
-	today := time.Now().AddDate(0, 0, -offset)
-	limiter := make(chan struct{}, wikipediaConcurrency)
-
-	for i := 1; i <= maxLookbackDays; i++ {
-		date := today.AddDate(0, 0, -i)
-		urlStr := "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/tr.wikipedia/all-access/" + date.Format("2006/01/02")
-
-		wg.Add(1)
-		go func(url string) {
-			defer wg.Done()
-			body, err := fetch(url)
-			if err != nil {
-				return
-			}
-			var resp struct {
-				Items []struct {
-					Articles []struct {
-						Article string `json:"article"`
-					} `json:"articles"`
-				} `json:"items"`
-			}
-			if err := json.Unmarshal(body, &resp); err != nil || len(resp.Items) == 0 {
-				return
-			}
-			articles := resp.Items[0].Articles
-			var articleWG sync.WaitGroup
-			for _, a := range articles {
-				article := a
-				articleWG.Add(1)
-				limiter <- struct{}{}
-				go func() {
-					defer articleWG.Done()
-					defer func() { <-limiter }()
-					key := "wiki_" + urls.QueryEscape(article.Article)
-					content, err := getWikipediaExtract(article.Article)
-					if err != nil || content == "" {
-						return
-					}
-					if ok, err := existsOrInsert(Item{Key: key, Title: article.Article, Content: content}); err == nil && ok {
-						insertedAny.Store(true)
-					}
-				}()
-			}
-			articleWG.Wait()
-		}(urlStr)
-	}
-	wg.Wait()
-	offset++
-	return insertedAny.Load(), nil
-}
-
-func getWikipediaExtract(title string) (string, error) {
-	url := fmt.Sprintf("https://tr.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=true&titles=%s&format=json", urls.QueryEscape(title))
-	body, err := fetch(url)
-	if err != nil {
-		return "", err
-	}
-	var resp struct {
-		Query struct {
-			Pages map[string]struct {
-				Extract string `json:"extract"`
-			} `json:"pages"`
-		} `json:"query"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return "", err
-	}
-	for _, p := range resp.Query.Pages {
-		if p.Extract != "" && !strings.HasSuffix(p.Extract, "may refer to:") {
-			return p.Extract, nil
-		}
-	}
-	return "", errors.New("makale özeti bulunamadı")
-}
-
-func processDevTo(body []byte) ([]Item, error) {
-	var articles []struct {
-		ID          int    `json:"id"`
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	}
-	if err := json.Unmarshal(body, &articles); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, a := range articles {
-		items = append(items, Item{
-			Key:     fmt.Sprintf("devto_%d", a.ID),
-			Title:   a.Title,
-			Content: a.Description,
-		})
-	}
-	return items, nil
-}
-
-func processLobsters(body []byte) ([]Item, error) {
-	var posts []struct {
-		ShortID     string `json:"short_id"`
-		Title       string `json:"title"`
-		Description string `json:"description"`
-	}
-	if err := json.Unmarshal(body, &posts); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, post := range posts {
-		items = append(items, Item{
-			Key:     "lobsters_" + post.ShortID,
-			Title:   post.Title,
-			Content: post.Description,
-		})
-	}
-	return items, nil
-}
-
-func processProductHunt(body []byte) ([]Item, error) {
-	var resp struct {
-		Posts []struct {
-			ID      int    `json:"id"`
-			Name    string `json:"name"`
-			Tagline string `json:"tagline"`
-		} `json:"posts"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, err
-	}
-	var items []Item
-	for _, p := range resp.Posts {
-		items = append(items, Item{
-			Key:     fmt.Sprintf("ph_%d", p.ID),
-			Title:   p.Name,
-			Content: p.Tagline,
-		})
-	}
-	return items, nil
-}
-
-func processSlashdot(body []byte) ([]Item, error) {
-	doc, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
-	var items []Item
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "item" {
-			var title, desc, guid string
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				if c.Type == html.ElementNode {
-					switch c.Data {
-					case "title":
-						title = getTextContent(c)
-					case "description":
-						desc = getTextContent(c)
-					case "guid":
-						guid = getTextContent(c)
-					}
-				}
-			}
-			if guid != "" {
-				items = append(items, Item{
-					Key:     "slashdot_" + guid,
-					Title:   title,
-					Content: desc,
-				})
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
-	return items, nil
+	return nil, atomErr
 }
 
-func getTextContent(n *html.Node) string {
-	if n == nil {
-		return ""
-	}
-	var b strings.Builder
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.TextNode {
-			b.WriteString(n.Data)
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(n)
-	return b.String()
-}
-
-func processGitHubTrending(body []byte) ([]Item, error) {
-	var resp struct {
-		Items []struct {
-			FullName    string `json:"full_name"`
-			Description string `json:"description"`
-			HTMLURL     string `json:"html_url"`
-			Stargazers  int    `json:"stargazers_count"`
-		} `json:"items"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
+func ParseItems(body []byte) ([]Item, error) {
+	var feed RssEnvelope
+	if err := xml.Unmarshal(body, &feed); err != nil {
 		return nil, err
 	}
-	var items []Item
-	for _, repo := range resp.Items {
-		content := repo.Description
+
+	if len(feed.Channel.Items) == 0 {
+		return nil, errors.New("rss feed has no items")
+	}
+
+	items := make([]Item, 0, min(maxRSSItemsPerFeed, len(feed.Channel.Items)))
+	for _, entry := range feed.Channel.Items {
+		title := strings.TrimSpace(StripHTML(entry.Title))
+		content := strings.TrimSpace(StripHTML(entry.Description))
+		keySource := FirstEmpty(strings.TrimSpace(entry.GUID), strings.TrimSpace(entry.Link), title)
+		if keySource == "" {
+			continue
+		}
 		if content == "" {
-			content = fmt.Sprintf("GitHub repository with %d stars", repo.Stargazers)
+			content = title
 		}
+
 		items = append(items, Item{
-			Key:     "github_" + strings.ReplaceAll(repo.FullName, "/", "_"),
-			Title:   repo.FullName,
+			Key:     BuildFeedKey("rss", keySource),
+			Title:   title,
 			Content: content,
 		})
-	}
-	return items, nil
-}
-
-func processRSSFeed(body []byte) ([]Item, error) {
-	return []Item{
-		{
-			Key:     "rss_raw",
-			Title:   "Raw RSS Feed",
-			Content: string(body),
-		},
-	}, nil
-}
-
-
-func processSource(s Source) (bool, error) {
-	body, err := fetch(s.URL)
-	if err != nil {
-		return false, fmt.Errorf("failed to fetch data: %w", err)
-	}
-	items, err := s.Processor(body)
-	if err != nil {
-		return false, fmt.Errorf("failed to process data: %w", err)
+		if len(items) >= maxRSSItemsPerFeed {
+			break
+		}
 	}
 
 	if len(items) == 0 {
-		return false, nil
+		return nil, errors.New("rss feed produced no valid items")
+	}
+	return items, nil
+}
+
+func ParseAtomItems(body []byte) ([]Item, error) {
+	var feed AtomEnvelope
+	if err := xml.Unmarshal(body, &feed); err != nil {
+		return nil, err
 	}
 
-	var insertedAny atomic.Bool
-	var wg sync.WaitGroup
-	semaphore := make(chan struct{}, 10) 
+	if len(feed.Entries) == 0 {
+		return nil, errors.New("atom feed entries")
+	}
 
-	for _, itm := range items {
-		if (itm.Content == "" && itm.Title == "") || itm.Key == "" {
+	items := make([]Item, 0, min(maxRSSItemsPerFeed, len(feed.Entries)))
+	for _, entry := range feed.Entries {
+		title := strings.TrimSpace(StripHTML(entry.Title))
+		content := strings.TrimSpace(StripHTML(FirstEmpty(entry.Content, entry.Summary)))
+		link := strings.TrimSpace(AtomEntryLink(entry.Links))
+		keySource := FirstEmpty(strings.TrimSpace(entry.ID), link, title)
+		if keySource == "" {
 			continue
 		}
-		if itm.Content == "" {
-			itm.Content = itm.Title
+
+		if content == "" {
+			content = title
 		}
 
-		wg.Add(1)
-		go func(item Item) {
-			defer wg.Done()
-			semaphore <- struct{}{}
-			defer func() { <-semaphore }()
+		items = append(items, Item{
+			Key:     BuildFeedKey("atom", keySource),
+			Title:   title,
+			Content: content,
+		})
 
-			if ok, err := existsOrInsert(item); err == nil && ok {
-				insertedAny.Store(true)
-			}
-		}(itm)
+		if len(items) >= maxRSSItemsPerFeed {
+			break
+		}
 	}
-	wg.Wait()
 
-	return insertedAny.Load(), nil
+	if len(items) == 0 {
+		return nil, errors.New(" no valid items")
+	}
+	return items, nil
+}
+
+func AtomEntryLink(links []AtomLink) string {
+	if len(links) == 0 {
+		return ""
+	}
+	if len(links) == 1 {
+		return links[0].Href
+	}
+
+	sorted := make([]AtomLink, len(links))
+	copy(sorted, links)
+	sort.SliceStable(sorted, func(i, j int) bool {
+		if sorted[i].Rel == "alternate" {
+			return true
+		}
+		if sorted[j].Rel == "alternate" {
+			return false
+		}
+		return i < j
+	})
+	return sorted[0].Href
+}
+
+func ProcessSource(s Source) (bool, error) {
+	body, err := Fetch(s.URL)
+	if err != nil {
+		return false, fmt.Errorf("failed to Fetch: %w", err)
+	}
+
+	items, err := s.Processor(body)
+	if err != nil {
+		return false, fmt.Errorf("failed to process: %w", err)
+	}
+
+	inserted := false
+
+	for _, item := range items {
+		if len(item.Title) == 0 || len(item.Key) == 0 || len(item.Content) < 300 {
+			continue
+		}
+
+		ok, err := Exists(item, s.URL)
+		if err != nil {
+			return false, fmt.Errorf("insert %q: %w", item.Key, err)
+		}
+
+		if ok {
+			inserted = true
+		}
+	}
+
+	return inserted, nil
 }

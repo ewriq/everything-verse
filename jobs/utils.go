@@ -2,6 +2,8 @@ package jobs
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/hex"
 	"everything-verse/database"
 	"fmt"
 	"io"
@@ -11,12 +13,13 @@ import (
 	"golang.org/x/net/html"
 )
 
-func fetch(url string) ([]byte, error) {
+func Fetch(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("failed to request: %w", err)
 	}
-	req.Header.Set("User-Agent", userAgent)
+
+	req.Header.Set("User-Agent", "everything-verse-bot/1.0 (https://github.com/ewriq/everything-verse)")
 	req.Header.Set("Accept", "application/json, application/xml, text/xml, */*")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 	req.Header.Set("Cache-Control", "no-cache")
@@ -39,15 +42,7 @@ func fetch(url string) ([]byte, error) {
 	return body, nil
 }
 
-func existsOrInsert(item Item) (bool, error) {
-	dbMutex.RLock()
-	exists := database.Exists(item.Key)
-	dbMutex.RUnlock()
-
-	if exists {
-		return false, nil
-	}
-
+func Exists(item Item, URL string) (bool, error) {
 	dbMutex.Lock()
 	defer dbMutex.Unlock()
 
@@ -55,15 +50,15 @@ func existsOrInsert(item Item) (bool, error) {
 		return false, nil
 	}
 
-	if err := database.Insert(item.Key, item.Content, item.Title); err != nil {
+	if err := database.Insert(item.Key, item.Content, item.Title, URL); err != nil {
 		return false, fmt.Errorf("database insert failed: %w", err)
 	}
 
-	fmt.Printf("ADDED: %s (Key: %s)\n", item.Title, item.Key)
+	//fmt.Printf("ADDED: %s (Key: %s)\n", item.Title, item.Key)
 	return true, nil
 }
 
-func stripHTML(input string) string {
+func StripHTML(input string) string {
 	if input == "" {
 		return ""
 	}
@@ -79,4 +74,19 @@ func stripHTML(input string) string {
 			b.Write(z.Text())
 		}
 	}
+}
+
+func BuildFeedKey(prefix, source string) string {
+	sum := sha1.Sum([]byte(source))
+	return prefix + "_" + hex.EncodeToString(sum[:])
+}
+
+func FirstEmpty(values ...string) string {
+	for _, value := range values {
+		candidate := strings.TrimSpace(value)
+		if candidate != "" {
+			return candidate
+		}
+	}
+	return ""
 }
